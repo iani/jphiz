@@ -63,6 +63,13 @@
 }.fork(AppClock);
 
 /*
+// To start a program from SuperCollider, using Unix commands:
+// Example:
+
+"open \"/Applications/CCV-1.2-mac-bin/Community Core Vision/Community Core Vision.app\"".unixcmd;
+
+
+/*
 
 ~stopCamPost.value;
 ~startCamPost.value;
