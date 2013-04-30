@@ -1,3 +1,12 @@
+/*
+
+This was the original file used to run Narcissus in Cyprus/Limassol, November 2012
+for the Roadblocks Project.
+
+It is now being modified to run for other locations.
+
+*/
+
 
 ~receptionTests = {
 	"STARTING KINECT AND WEBCAM RECEPTION POSTING".postln;
