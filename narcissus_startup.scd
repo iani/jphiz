@@ -1,3 +1,4 @@
+
 /*
 
 This was the original file used to run Narcissus in Cyprus/Limassol, November 2012
@@ -6,6 +7,8 @@ for the Roadblocks Project.
 It is now being modified to run for other locations.
 
 Testing.
+
+Dialog.openPanel({ | path | path.postln; });
 
 */
 
@@ -92,22 +95,23 @@ to start running the system at startup.
 		0.5.wait;   // Make sure that SynthDef has time to be sent to the server
 		// Now ready to start the sound process with the BlobWatcher:
 	~simpleBlob = BlobWatcher(
-		{ | blob |
-			if (synth.isNil and: { rect.containsPoint((blob.x_pos@blob.y_pos)) }) {
-				synth = Synth('playbufmagabove', [buf: b0, attack: 1, release: 3, startPos: blob.x_pos,
-					rate: blob.x_pos + 0.7, magabove: blob.y_pos * 15, pos: blob.width * 10,
-					magabovelag: 2,
-					amp: 0.7
-				])
-			}
-		},
-		{ | blob | synth.set(\rate, blob.x_pos + 0.7, \magabove, blob.y_pos * 15, \pos, blob.width * 10) },
-		{ | blob |
-			synth !? {
-				if (blob.blobs.detect({ | b | rect.containsPoint(b.x_pos@b.y_pos) }).isNil) { synth.release; synth = nil }
-			};
-		},
-		port: 3333;  // CAREFULL TO MAKE THIS THE PORT
+			{ | blob |
+				"NEW BLOB".postln;
+				if (synth.isNil and: { rect.containsPoint((blob.x_pos@blob.y_pos)) }) {
+					synth = Synth('playbufmagabove', [buf: b0, attack: 1, release: 3, startPos: blob.x_pos,
+						rate: blob.x_pos + 0.7, magabove: blob.y_pos * 15, pos: blob.width * 10,
+						magabovelag: 2,
+						amp: 0.7
+					])
+				}
+			},
+			{ | blob | synth !? { synth.set(\rate, blob.x_pos + 0.7, \magabove, blob.y_pos * 15, \pos, blob.width * 10) } },
+			{ | blob |
+				synth !? {
+					if (blob.blobs.detect({ | b | rect.containsPoint(b.x_pos@b.y_pos) }).isNil) { synth.release; synth = nil }
+				};
+			},
+		port: 3001;  // Make sure that this is the port that Community Core Vision is sending to
 	).enable;
 	}.fork; // we need to fork this in order for 'wait' to work.
 };
@@ -148,6 +152,8 @@ to start running the system at startup.
 ~webcam.enable;
 
 ~webcam.disable;
+
+~installation.value;
 
 */
 
