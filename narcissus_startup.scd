@@ -9,6 +9,9 @@ Testing.
 
 */
 
+// this is to get the exact path output in the post window
+Dialog.openPanel({ | path | path.postln; });
+
 /*
 Here we create a function that creates some other functions that we need for tests.
 The function that makes the functions is stored in ~receptionTests
@@ -20,8 +23,8 @@ To create the functions we need to run ~receptionTests (see below)
 ~receptionTests = {
 	"STARTING KINECT AND WEBCAM RECEPTION POSTING".postln;
 
-	~kinect = OSCFunc({ | ... args | "KINECT! ".post; args.postln }, '/tuio/2Dcur', recvPort: 3001); // used to be 3333
-	~webcam = OSCFunc({ | ... args | "WEBCAM! ".post; args.postln }, '/tuio/2Dcur', recvPort: 3333); // used to be 3001
+	~kinect = OSCFunc({ | ... args | "KINECT! ".post; args.postln }, '/tuio/2Dcur', recvPort: 3001); // used to be 3001
+	~webcam = OSCFunc({ | ... args | "WEBCAM! ".post; args.postln }, '/tuio/2Dcur', recvPort: 3333); // used to be 3333
 
 	~kinect.enable;
 	~webcam.enable;
@@ -65,7 +68,8 @@ to start running the system at startup.
 	*/
 	// Now we load the sample using the path that we got from the post window:
 	b0 = Buffer.read(Server.default,
-		path: "/Users/iani2/Dropbox/Persons+Projects/JPH2/SoundSamples/swallows/swallows10minL.aiff"
+		// copy-paste here
+		path: "/Users/jp/Dropbox/JPH2/SoundSamples/swallows/swallows10minL.aiff"
 	);
 
 	rect = Rect(0.1, 0.1, 0.93, 0.93);
@@ -101,7 +105,7 @@ to start running the system at startup.
 				])
 			}
 		},
-		{ | blob | synth.set(\rate, blob.x_pos + 0.7, \magabove, blob.y_pos * 15, \pos, blob.width * 10) },
+		{ | blob | synth !? { synth.set(\rate, blob.x_pos + 0.7, \magabove, blob.y_pos * 15, \pos, blob.width * 10) } },
 		{ | blob |
 			synth !? {
 				if (blob.blobs.detect({ | b | rect.containsPoint(b.x_pos@b.y_pos) }).isNil) { synth.release; synth = nil }
