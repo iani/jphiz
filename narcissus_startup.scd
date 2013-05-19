@@ -96,9 +96,8 @@ to start running the system at startup.
 		// Now ready to start the sound process with the BlobWatcher:
 	~simpleBlob = BlobWatcher(
 			{ | blob |
-				"NEW BLOB".postln;
 				if (synth.isNil and: { rect.containsPoint((blob.x_pos@blob.y_pos)) }) {
-					synth = Synth('playbufmagabove', [buf: b0, attack: 1, release: 3, startPos: blob.x_pos,
+						synth = Synth('playbufmagabove', [buf: b0, attack: 1, release: 3, startPos: blob.x_pos,
 						rate: blob.x_pos + 0.7, magabove: blob.y_pos * 15, pos: blob.width * 10,
 						magabovelag: 2,
 						amp: 0.7
