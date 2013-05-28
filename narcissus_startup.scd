@@ -20,7 +20,9 @@ The functions that it makes will be stored in ~startCamPost, ~stopCampost
 To create the functions we need to run ~receptionTests (see below)
 */
 
-~receptionTests = {
+
+
+/*~receptionTests = {
 	"STARTING KINECT AND WEBCAM RECEPTION POSTING".postln;
 
 	~kinect = OSCFunc({ | ... args | "KINECT! ".post; args.postln }, '/tuio/2Dcur', recvPort: 3001); // used to be 3001
@@ -33,8 +35,6 @@ To create the functions we need to run ~receptionTests (see below)
 	~stopCamPost = { ~kinect.disable; ~webcam.disable };
 
 };
-
-/*
 // Create the reception tests (this also enables posting automatically):
 ~receptionTests.value;
 
@@ -70,6 +70,7 @@ to start running the system at startup.
 	b0 = Buffer.read(Server.default,
 		// copy-paste here
 		path: "/Users/jp/Dropbox/JPH2/SoundSamples/swallows/swallows10minL.aiff"
+		// path: "/Users/jp/Dropbox/JPH2/SoundSamples/poets/MureauCage.aiff"
 	);
 
 	rect = Rect(0.1, 0.1, 0.93, 0.93);
@@ -80,7 +81,7 @@ to start running the system at startup.
 	{
 	SynthDef("playbufmagabove", { | out = 0, buf = 0, rate = 1, startPos = 0, loop = 1, attack = 0.01, release = 1,
 		gate = 1, amp = 1,
-		magabove = 0 |
+		magabove = 0, pos = 0 |
 		var env, envgen, source, chain;
 		env = Env.asr(attack, 1, release);
 		envgen = EnvGen.kr(env, gate, amp, doneAction: 2);
@@ -91,7 +92,8 @@ to start running the system at startup.
 			doneAction: 2);
 		chain = FFT(LocalBuf(2048), source);
 		chain = PV_MagAbove(chain, magabove);
-		Out.ar(out, IFFT(chain));
+		// Out.ar(out, IFFT(chain));  // stereo
+		Out.ar(out, PanAz.ar(4, IFFT(chain), pos)); // quad
 	}).add;
 		0.5.wait;   // Make sure that SynthDef has time to be sent to the server
 		// Now ready to start the sound process with the BlobWatcher:
@@ -115,6 +117,8 @@ to start running the system at startup.
 	).enable;
 	}.fork; // we need to fork this in order for 'wait' to work.
 };
+
+
 
 // The following routine (fork) is put in the startup file to start playing as soon as SC boots:
 /*
