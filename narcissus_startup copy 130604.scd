@@ -54,7 +54,7 @@ Here we create a function that we will run to install the narcissus program and 
 This function is installed in ~installation. In a later part below, we show how to use ~installation
 to start running the system at startup.
 */
-(
+
 ~installation = {
 	var synth; // The synth that plays the swallows sound and processes it.
 	var rect;  // When a blob is inside this rect, then the sound plays.
@@ -72,9 +72,8 @@ to start running the system at startup.
 	// Now we load the sample using the path that we got from the post window:
 	b0 = Buffer.read(Server.default,
 		// copy-paste here
-		// path: "/Users/jp/Dropbox/JPH2/SoundSamples/swallows/swallows10minL.aiff"
+		path: "/Users/jp/Dropbox/JPH2/SoundSamples/swallows/swallows10minL.aiff"
 		// path: "/Users/jp/Dropbox/JPH2/SoundSamples/poets/MureauCage.aiff"
-		path: "/Users/jp/Dropbox/JPH2/SoundSamples/swallows/swallows_clean5am.wav"
 	);
 
 	rect = Rect(0.1, 0.1, 0.93, 0.93);
@@ -98,8 +97,7 @@ to start running the system at startup.
 		magabovelag : smoothing factor to prevent jumps in the change of magabove (default: 2)
 		pos: Position of output of sound in the quad surround channel output. In channels. Read Help file for PanAz
 		*/
-		SynthDef("playbufmagabove", { | out = 0, buf = 0, rate = 1, startPos = 0, loop = 1, attack = 1,
-			release = 1,
+		SynthDef("playbufmagabove", { | out = 0, buf = 0, rate = 1, startPos = 0, loop = 1, attack = 0.01, release = 1,
 			gate = 1, amp = 1,
 			magabove = 0, magabovelag = 2,
 			pos = 0 |
@@ -107,52 +105,20 @@ to start running the system at startup.
 			env = Env.asr(attack, 1, release);
 			envgen = EnvGen.kr(env, gate, amp, doneAction: 2);
 			source = envgen *
-			/*
 			PlayBuf.ar(buf.numChannels, buf, rate * BufRateScale.kr(buf), 1,
-			startPos * BufFrames.kr(buf),
-			loop,
-			doneAction: 2);
-			*/
-			PlayBuf.ar(buf.numChannels, buf, /* rate */ 1 * BufRateScale.kr(buf), 1,
-				/* startPos */ 0 * BufFrames.kr(buf),
+				startPos * BufFrames.kr(buf),
 				loop,
 				doneAction: 2);
 			chain = FFT(LocalBuf(2048), source);
-			// chain = PV_MagAbove(chain, Lag.kr(magabove, magabovelag));
-			// chain = PV_MagAbove(chain, Lag.kr(/* magabove */ 0, magabovelag));
-			chain = PV_MagAbove(chain, 0);
-			// Out.ar(out, PanAz.ar(4, IFFT(chain), pos));
-			Out.ar(out, PanAz.ar(4, IFFT(chain), Lag.kr(pos, 1));
-			// Out.ar(out, PanAz.ar(4, IFFT(chain), 0));
+			chain = PV_MagAbove(chain, Lag.kr(magabove, magabovelag));
+			Out.ar(out, PanAz.ar(4, IFFT(chain), pos));
 		}).add;
 		0.5.wait;   // Make sure that SynthDef has time to be sent to the server
 		// Now ready to start the sound process with the BlobWatcher:
-		~simpleBlob = BlobWatcher(
-            { | blob |
-                if (synth.isNil and: { rect.containsPoint((blob.x_pos@blob.y_pos)) }) {
-                        //"MAKING NEW SYNTH".postln;
-                        synth = Synth('playbufmagabove', [buf: b0, attack: 1, release: 3, startPos: blob.x_pos,
-                        rate: blob.x_pos + 0.7, magabove: blob.y_pos * 15, pos: blob.width * 10,
-                        magabovelag: 2,
-                        amp: 0.7
-                    ])
-                }
-            },
-            { | blob | synth !? { synth.set(\rate, blob.x_pos + 0.7, \magabove, blob.y_pos * 15, \pos, blob.width * 10) } },
-            { | blob |
-                synth !? {
-                    if (blob.blobs.detect({ | b | rect.containsPoint(b.x_pos@b.y_pos) }).isNil) {
-                            //"STOPPING SYNTH".postln;
-                            synth.release; synth = nil
-                        }
-                };
-            },
-        port: 3333;  // Make sure that this is the port that Community Core Vision is sending to
-    ).enable;
-		/*~simpleBlob = BlobWatcher(
+	~simpleBlob = BlobWatcher(
 			{ | blob |
 				if (synth.isNil and: { rect.containsPoint((blob.x_pos@blob.y_pos)) }) {
-					synth = Synth('playbufmagabove', [buf: b0, attack: 1, release: 3, startPos: blob.x_pos,
+						synth = Synth('playbufmagabove', [buf: b0, attack: 1, release: 3, startPos: blob.x_pos,
 						rate: blob.x_pos + 0.7, magabove: blob.y_pos * 15, pos: blob.width * 10,
 						magabovelag: 2,
 						amp: 0.7
@@ -165,13 +131,12 @@ to start running the system at startup.
 					if (blob.blobs.detect({ | b | rect.containsPoint(b.x_pos@b.y_pos) }).isNil) { synth.release; synth = nil }
 				};
 			},
-			port: 3333;  // Make sure that this is the port that Community Core Vision is sending to
-		).enable;
-		*/
+		port: 3333;  // Make sure that this is the port that Community Core Vision is sending to
+	).enable;
 	}.fork; // we need to fork this in order for 'wait' to work.
 };
-}
-//
+
+
 
 // The following routine (fork) is put in the startup file to start playing as soon as SC boots:
 /*
