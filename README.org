@@ -1,0 +1,8 @@
+
+Classes and SynthDefs for Narcissus installation
+
+SC code by Iannis Zannos
+
+Installation by Jean-Pierre Hebert, Iannis Zannos and Jeremy Sarchet
+
+Last update of this file: [2013-06-06 Thu]
