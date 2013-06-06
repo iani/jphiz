@@ -100,19 +100,26 @@ to start running the system at startup.
 			env = Env.asr(attack, 1, release);
 			envgen = EnvGen.kr(env, gate, amp, doneAction: 2);
 			source = envgen *
-			PlayBuf.ar(buf.numChannels, buf, rate * BufRateScale.kr(buf), 1,
+/*			PlayBuf.ar(buf.numChannels, buf, rate * BufRateScale.kr(buf), 1,
 				startPos * BufFrames.kr(buf),
 				loop,
 				doneAction: 2);
+*/
+			PlayBuf.ar(buf.numChannels, buf, /* rate */ 1 * BufRateScale.kr(buf), 1,
+				/* startPos */ 0 * BufFrames.kr(buf),
+				loop,
+				doneAction: 2);
 			chain = FFT(LocalBuf(2048), source);
-			chain = PV_MagAbove(chain, Lag.kr(magabove, magabovelag));
-			Out.ar(out, PanAz.ar(4, IFFT(chain), pos));
+			chain = PV_MagAbove(chain, Lag.kr(/* magabove */ 0, magabovelag));
+			Out.ar(out, PanAz.ar(4, IFFT(chain), Lag.kr(pos, 1), width: 3);
+//			Out.ar(out, IFFT(chain).dup);
 		}).add;
 		0.5.wait;   // Make sure that SynthDef has time to be sent to the server
 		// Now ready to start the sound process with the BlobWatcher:
 	~simpleBlob = BlobWatcher(
 			{ | blob |
 				if (synth.isNil and: { rect.containsPoint((blob.x_pos@blob.y_pos)) }) {
+						"MAKING NEW SYNTH".postln;
 						synth = Synth('playbufmagabove', [buf: b0, attack: 1, release: 3, startPos: blob.x_pos,
 						rate: blob.x_pos + 0.7, magabove: blob.y_pos * 15, pos: blob.width * 10,
 						magabovelag: 2,
@@ -123,7 +130,10 @@ to start running the system at startup.
 			{ | blob | synth !? { synth.set(\rate, blob.x_pos + 0.7, \magabove, blob.y_pos * 15, \pos, blob.width * 10) } },
 			{ | blob |
 				synth !? {
-					if (blob.blobs.detect({ | b | rect.containsPoint(b.x_pos@b.y_pos) }).isNil) { synth.release; synth = nil }
+					if (blob.blobs.detect({ | b | rect.containsPoint(b.x_pos@b.y_pos) }).isNil) {
+							"STOPPING SYNTH".postln;
+							synth.release; synth = nil
+						}
 				};
 			},
 		port: 3001;  // Make sure that this is the port that Community Core Vision is sending to
