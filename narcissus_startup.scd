@@ -112,16 +112,17 @@ to start running the system at startup.
 				loop,
 				doneAction: 2);
 			chain = FFT(LocalBuf(2048), source);
-			chain = PV_MagAbove(chain, 0);
-			// Out.ar(out, PanAz.ar(4, IFFT(chain), Lag.kr(pos, 1)));
-			Out.ar(out, PanAz.ar(4, source, Lag.kr(pos, 1), width: 2));
+			chain = PV_MagAbove(chain, Lag.kr(magabove, magabovelag));
+			Out.ar(out, PanAz.ar(4, IFFT(chain), Lag.kr(pos, 5)));
+			// Out.ar(out, PanAz.ar(4, source, Lag.kr(pos, 5), width: 2));
+			// Out.ar(out, source);
 		}).add;
 		0.5.wait;   // Make sure that SynthDef has time to be sent to the server
 		// Now ready to start the sound process with the BlobWatcher:
 		~simpleBlob = BlobWatcher(
             { | blob |
                 if (synth.isNil and: { rect.containsPoint((blob.x_pos@blob.y_pos)) }) {
-                        synth = Synth('playbufmagabove', [buf: b0, attack: 1, release: 0.3, startPos: blob.x_pos,
+                        synth = Synth('playbufmagabove', [buf: b0, attack: 1, release: 2, startPos: blob.x_pos,
                         rate: blob.x_pos + 0.7, magabove: blob.y_pos * 15, pos: blob.width * 10,
                         magabovelag: 2,
                         amp: 0.7
