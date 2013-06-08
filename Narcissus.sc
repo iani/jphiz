@@ -66,7 +66,7 @@ Narcissus {
 	}
 
 	*enable {
-		blobWatcher ?? { blobWatcher = this.makeBlobWatcher };
+		blobWatcher ?? { this.makeBlobWatcher };
 		blobWatcher.enable;
 	}
 
