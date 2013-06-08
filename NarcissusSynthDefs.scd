@@ -25,13 +25,13 @@ SynthDef("playbufmagabove", { | out = 0, buf = 0, rate = 1, startPos = 0, loop =
 	var env, envgen, source, chain;
 	env = Env.asr(attack, 1, release);
 	envgen = EnvGen.kr(env, gate, amp, doneAction: 2);
-	source = envgen * PlayBuf.ar(buf.numChannels, buf, /* rate */ 1 * BufRateScale.kr(buf), 1,
-		/* startPos */ 0 * BufFrames.kr(buf),
-		loop,
-		doneAction: 2
-	);
+	source = envgen *
+	PlayBuf.ar(buf.numChannels, buf, Lag.kr(rate,3) * BufRateScale.kr(buf), 1,
+				startPos * BufFrames.kr(buf),
+				loop,
+				doneAction: 2);
 	chain = FFT(LocalBuf(2048), source);
 	chain = PV_MagAbove(chain, Lag.kr(magabove, magabovelag));
-	Out.ar(out, PanAz.ar(4, IFFT(chain), Lag.kr(pos, 1), width: 3));
+	Out.ar(out, PanAz.ar(4, IFFT(chain), Lag.kr(pos, 5), width: 2));
 }).add;
 
