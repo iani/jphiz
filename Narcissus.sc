@@ -14,7 +14,7 @@ Narcissus {
 	classvar <>rect, <blobWatcher;
 
 	*initClass { // Make Narcissus start whenever the Library is recompiled
-//		StartUp add: { this.start }
+		StartUp add: { this.start }
 	}
 
 	*start {
@@ -74,7 +74,7 @@ Narcissus {
 		blobWatcher = BlobWatcher(
 			{ | blob |
 				if (synth.isNil and: { rect.containsPoint((blob.x_pos@blob.y_pos)) }) {
-						"MAKING NEW SYNTH".postln;
+						// "MAKING NEW SYNTH".postln;
 						synth = Synth('playbufmagabove', [buf: buffer, attack: 1, release: 3, startPos: blob.x_pos,
 						rate: blob.x_pos + 0.7, magabove: blob.y_pos * 15, pos: blob.width * 10,
 						magabovelag: 2,
@@ -86,7 +86,7 @@ Narcissus {
 			{ | blob |
 				synth !? {
 					if (blob.blobs.detect({ | b | rect.containsPoint(b.x_pos@b.y_pos) }).isNil) {
-							"STOPPING SYNTH".postln;
+							// "STOPPING SYNTH".postln;
 							synth.release; synth = nil
 						}
 				};
