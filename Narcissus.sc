@@ -79,6 +79,7 @@ Narcissus {
 	*makeBlobWatcher {
 		blobWatcher = BlobWatcher(
 			{ | blob |
+//				postf("new blob at %\n", (blob.x_pos@blob.y_pos));
 				if (synth.isNil and: { rect.containsPoint((blob.x_pos@blob.y_pos)) }) {
 						"MAKING NEW SYNTH".postln;
 						synth = Synth('playbufmagabove', [buf: buffer, attack: 1, release: 3, startPos: blob.x_pos,
@@ -89,9 +90,11 @@ Narcissus {
 				}
 			},
 			{ | blob |
+//				postf("blob moved to: %\n", (blob.x_pos@blob.y_pos));
 				synth !? { synth.set(\rate, this calcRate: blob.x_pos, \magabove, blob.y_pos * 15, \pos, blob.width * 10) }
 			},
 			{ | blob |
+//				postf("blob died: %\n", (blob.x_pos@blob.y_pos));
 				synth !? {
 					if (blob.blobs.detect({ | b | rect.containsPoint(b.x_pos@b.y_pos) }).isNil) {
 							"STOPPING SYNTH".postln;
