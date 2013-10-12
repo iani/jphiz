@@ -73,8 +73,8 @@ to start running the system at startup.
 	b0 = Buffer.read(Server.default,
 		// copy-paste here
 		// path: "/Users/jp/Dropbox/JPH2/SoundSamples/swallows/swallows10minL.aiff"
-		// path: "/Users/jp/Dropbox/JPH2/SoundSamples/poets/MureauCage.aiff"
-		path: "/Users/jp/Dropbox/JPH2/SoundSamples/swallows/swallows_clean5am.wav"
+		path: "/Users/jp/Dropbox/JPH2/SoundSamples/poets/MureauCage.aiff"
+		// path: "/Users/jp/Dropbox/JPH2/SoundSamples/swallows/swallows_clean5am.wav"
 	);
 
 	rect = Rect(0.1, 0.1, 0.93, 0.93);
